@@ -1,1 +1,882 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Parking - Slot Rental Platform</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #222;
+        }
+
+        /* NAVBAR */
+        nav {
+            background: #0d47a1;
+            color: white;
+            padding: 18px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav h1 {
+            font-size: 24px;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 25px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+
+        /* HERO */
+        .hero {
+            background: linear-gradient(
+                rgba(13, 71, 161, 0.9),
+                rgba(25, 118, 210, 0.9)
+            ),
+            url("https://images.unsplash.com/photo-1506521781263-d8422e82f27a?auto=format&fit=crop&w=1500&q=80");
+
+            background-size: cover;
+            background-position: center;
+
+            color: white;
+            padding: 80px 7%;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-size: 42px;
+            margin-bottom: 15px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        /* SEARCH BOX */
+        .search-box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            max-width: 900px;
+            margin: auto;
+
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 12px;
+        }
+
+        .search-box input,
+        .search-box select {
+            padding: 13px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        button {
+            background: #ff9800;
+            color: white;
+            border: none;
+            padding: 13px 20px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #e68900;
+        }
+
+        /* CONTAINER */
+        .container {
+            width: 86%;
+            max-width: 1200px;
+            margin: 50px auto;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .section-title h2 {
+            font-size: 30px;
+            color: #0d47a1;
+        }
+
+        /* PARKING CARDS */
+        .parking-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .parking-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+
+        .parking-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .parking-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .card-content h3 {
+            color: #0d47a1;
+            margin-bottom: 10px;
+        }
+
+        .location {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .price {
+            font-size: 20px;
+            color: #2e7d32;
+            font-weight: bold;
+            margin: 12px 0;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 15px;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .available {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .booked {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .book-btn {
+            width: 100%;
+        }
+
+        /* FEATURES */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .feature {
+            background: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .feature .icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .feature h3 {
+            color: #0d47a1;
+            margin-bottom: 10px;
+        }
+
+        /* MAP */
+        .map {
+            height: 350px;
+            background:
+                linear-gradient(45deg, #ddd 25%, transparent 25%),
+                linear-gradient(-45deg, #ddd 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #ddd 75%),
+                linear-gradient(-45deg, transparent 75%, #ddd 75%);
+            background-size: 50px 50px;
+            background-position: 0 0, 0 25px, 25px -25px, -25px 0px;
+
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-title {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .marker {
+            position: absolute;
+            background: #e53935;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .marker.one {
+            top: 40%;
+            left: 30%;
+        }
+
+        .marker.two {
+            top: 55%;
+            left: 60%;
+        }
+
+        .marker.three {
+            top: 25%;
+            left: 75%;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 450px;
+            margin: 8% auto;
+            padding: 30px;
+            border-radius: 12px;
+        }
+
+        .modal-content h2 {
+            color: #0d47a1;
+            margin-bottom: 20px;
+        }
+
+        .modal-content input,
+        .modal-content select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .close {
+            float: right;
+            font-size: 25px;
+            cursor: pointer;
+        }
+
+        /* FOOTER */
+        footer {
+            background: #0d47a1;
+            color: white;
+            padding: 30px;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .parking-grid,
+            .features {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .search-box {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            nav ul {
+                gap: 12px;
+            }
+
+            .hero h2 {
+                font-size: 30px;
+            }
+
+            .parking-grid,
+            .features,
+            .search-box {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                width: 92%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+    <h1>🅿️ Smart Parking</h1>
+
+    <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#parking">Find Parking</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#map">Map</a></li>
+    </ul>
+</nav>
+
+
+<!-- HERO SECTION -->
+<section class="hero" id="home">
+
+    <h2>Find & Rent Parking Easily</h2>
+
+    <p>
+        Reserve a parking slot near metro stations, offices,
+        malls and commercial areas.
+    </p>
+
+    <div class="search-box">
+
+        <input
+            type="text"
+            id="locationSearch"
+            placeholder="Enter location..."
+        >
+
+        <input
+            type="date"
+            id="date"
+        >
+
+        <select id="duration">
+            <option value="1">1 Hour</option>
+            <option value="2">2 Hours</option>
+            <option value="4">4 Hours</option>
+            <option value="8">8 Hours</option>
+        </select>
+
+        <button onclick="searchParking()">
+            Search
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- PARKING SLOTS -->
+<section class="container" id="parking">
+
+    <div class="section-title">
+        <h2>Available Parking Slots</h2>
+        <p>Choose a convenient parking location</p>
+    </div>
+
+    <div class="parking-grid" id="parkingList">
+
+        <!-- CARD 1 -->
+        <div class="parking-card" data-location="metro station">
+
+            <img src="https://images.unsplash.com/photo-1590674899484-d5640e854abe?auto=format&fit=crop&w=800&q=80">
+
+            <div class="card-content">
+
+                <h3>Metro Station Parking</h3>
+
+                <p class="location">
+                    📍 Central Metro Station
+                </p>
+
+                <span class="status available">
+                    ● Available
+                </span>
+
+                <p class="price">
+                    ₹30 / hour
+                </p>
+
+                <button
+                    class="book-btn"
+                    onclick="openBooking('Metro Station Parking', 30)"
+                >
+                    Book Now
+                </button>
+
+            </div>
+        </div>
+
+
+        <!-- CARD 2 -->
+        <div class="parking-card" data-location="office complex">
+
+            <img src="https://images.unsplash.com/photo-1506521781263-d8422e82f27a?auto=format&fit=crop&w=800&q=80">
+
+            <div class="card-content">
+
+                <h3>Business Park Parking</h3>
+
+                <p class="location">
+                    📍 IT Office Complex
+                </p>
+
+                <span class="status available">
+                    ● Available
+                </span>
+
+                <p class="price">
+                    ₹40 / hour
+                </p>
+
+                <button
+                    class="book-btn"
+                    onclick="openBooking('Business Park Parking', 40)"
+                >
+                    Book Now
+                </button>
+
+            </div>
+        </div>
+
+
+        <!-- CARD 3 -->
+        <div class="parking-card" data-location="shopping mall">
+
+            <img src="https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=800&q=80">
+
+            <div class="card-content">
+
+                <h3>Mall Parking</h3>
+
+                <p class="location">
+                    📍 City Shopping Mall
+                </p>
+
+                <span class="status booked">
+                    ● Booked
+                </span>
+
+                <p class="price">
+                    ₹50 / hour
+                </p>
+
+                <button
+                    class="book-btn"
+                    disabled
+                    style="background:#999"
+                >
+                    Currently Booked
+                </button>
+
+            </div>
+        </div>
+
+
+        <!-- CARD 4 -->
+        <div class="parking-card" data-location="railway station">
+
+            <img src="https://images.unsplash.com/photo-1545179605-129e35f6b7f2?auto=format&fit=crop&w=800&q=80">
+
+            <div class="card-content">
+
+                <h3>Railway Station Parking</h3>
+
+                <p class="location">
+                    📍 Main Railway Station
+                </p>
+
+                <span class="status available">
+                    ● Available
+                </span>
+
+                <p class="price">
+                    ₹25 / hour
+                </p>
+
+                <button
+                    class="book-btn"
+                    onclick="openBooking('Railway Station Parking', 25)"
+                >
+                    Book Now
+                </button>
+
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- MAP -->
+<section class="container" id="map">
+
+    <div class="section-title">
+        <h2>Parking Locations</h2>
+        <p>Find parking slots near your destination</p>
+    </div>
+
+    <div class="map">
+
+        <div class="map-title">
+            📍 Nearby Parking Locations
+        </div>
+
+        <div class="marker one">P</div>
+        <div class="marker two">P</div>
+        <div class="marker three">P</div>
+
+    </div>
+
+</section>
+
+
+<!-- FEATURES -->
+<section class="container" id="features">
+
+    <div class="section-title">
+        <h2>Platform Features</h2>
+    </div>
+
+    <div class="features">
+
+        <div class="feature">
+            <div class="icon">🔍</div>
+            <h3>Easy Search</h3>
+            <p>
+                Search parking slots based on location
+                and availability.
+            </p>
+        </div>
+
+        <div class="feature">
+            <div class="icon">📅</div>
+            <h3>Advance Booking</h3>
+            <p>
+                Reserve parking slots before reaching
+                your destination.
+            </p>
+        </div>
+
+        <div class="feature">
+            <div class="icon">💳</div>
+            <h3>Online Payment</h3>
+            <p>
+                Make secure digital payments for
+                your parking reservation.
+            </p>
+        </div>
+
+        <div class="feature">
+            <div class="icon">📍</div>
+            <h3>Location Based</h3>
+            <p>
+                Discover parking spaces close to
+                metro stations and offices.
+            </p>
+        </div>
+
+        <div class="feature">
+            <div class="icon">🏠</div>
+            <h3>Rent Your Space</h3>
+            <p>
+                Parking owners can list unused
+                parking spaces for rent.
+            </p>
+        </div>
+
+        <div class="feature">
+            <div class="icon">⚡</div>
+            <h3>Real-Time Availability</h3>
+            <p>
+                View available and booked parking
+                slots instantly.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- BOOKING MODAL -->
+<div class="modal" id="bookingModal">
+
+    <div class="modal-content">
+
+        <span class="close" onclick="closeBooking()">
+            &times;
+        </span>
+
+        <h2>Book Parking Slot</h2>
+
+        <p id="selectedParking"></p>
+
+        <label>Your Name</label>
+
+        <input
+            type="text"
+            id="userName"
+            placeholder="Enter your name"
+        >
+
+        <label>Vehicle Number</label>
+
+        <input
+            type="text"
+            id="vehicleNumber"
+            placeholder="Example: AP 01 AB 1234"
+        >
+
+        <label>Booking Hours</label>
+
+        <select id="bookingHours" onchange="calculatePrice()">
+
+            <option value="1">1 Hour</option>
+            <option value="2">2 Hours</option>
+            <option value="3">3 Hours</option>
+            <option value="4">4 Hours</option>
+            <option value="6">6 Hours</option>
+
+        </select>
+
+        <h3>
+            Total: ₹<span id="totalPrice">0</span>
+        </h3>
+
+        <br>
+
+        <button
+            style="width:100%"
+            onclick="confirmBooking()"
+        >
+            Confirm Booking
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- FOOTER -->
+<footer>
+
+    <h3>🅿️ Smart Parking Slot Rental Platform</h3>
+
+    <p>
+        Making urban parking easier, faster and smarter.
+    </p>
+
+    <br>
+
+    <p>
+        © 2026 Smart Parking Platform
+    </p>
+
+</footer>
+
+
+<script>
+
+    let selectedPrice = 0;
+    let selectedSlot = "";
+
+
+    /* SEARCH PARKING */
+    function searchParking() {
+
+        const search =
+            document
+            .getElementById("locationSearch")
+            .value
+            .toLowerCase()
+            .trim();
+
+        const cards =
+            document.querySelectorAll(".parking-card");
+
+        cards.forEach(card => {
+
+            const location =
+                card.dataset.location;
+
+            if (
+                search === "" ||
+                location.includes(search)
+            ) {
+
+                card.style.display = "block";
+
+            } else {
+
+                card.style.display = "none";
+
+            }
+
+        });
+
+        document
+            .getElementById("parking")
+            .scrollIntoView({
+                behavior: "smooth"
+            });
+    }
+
+
+    /* OPEN BOOKING */
+    function openBooking(slot, price) {
+
+        selectedSlot = slot;
+        selectedPrice = price;
+
+        document
+            .getElementById("selectedParking")
+            .innerText =
+            "Selected Parking: " + slot;
+
+        document
+            .getElementById("bookingModal")
+            .style.display = "block";
+
+        calculatePrice();
+    }
+
+
+    /* CLOSE BOOKING */
+    function closeBooking() {
+
+        document
+            .getElementById("bookingModal")
+            .style.display = "none";
+
+    }
+
+
+    /* CALCULATE PRICE */
+    function calculatePrice() {
+
+        const hours =
+            Number(
+                document
+                .getElementById("bookingHours")
+                .value
+            );
+
+        const total =
+            selectedPrice * hours;
+
+        document
+            .getElementById("totalPrice")
+            .innerText = total;
+    }
+
+
+    /* CONFIRM BOOKING */
+    function confirmBooking() {
+
+        const name =
+            document
+            .getElementById("userName")
+            .value;
+
+        const vehicle =
+            document
+            .getElementById("vehicleNumber")
+            .value;
+
+        if (name === "" || vehicle === "") {
+
+            alert(
+                "Please enter your name and vehicle number."
+            );
+
+            return;
+        }
+
+        const hours =
+            document
+            .getElementById("bookingHours")
+            .value;
+
+        const total =
+            selectedPrice * hours;
+
+        alert(
+            "Booking Confirmed!\\n\\n" +
+            "Parking: " + selectedSlot + "\\n" +
+            "Name: " + name + "\\n" +
+            "Vehicle: " + vehicle + "\\n" +
+            "Duration: " + hours + " hour(s)\\n" +
+            "Total Amount: ₹" + total
+        );
+
+        closeBooking();
+    }
+
+
+    /* CLOSE MODAL WHEN CLICKING OUTSIDE */
+    window.onclick = function(event) {
+
+        const modal =
+            document.getElementById("bookingModal");
+
+        if (event.target === modal) {
+            closeBooking();
+        }
+
+    };
+
+</script>
+
+</body>
+</html>
